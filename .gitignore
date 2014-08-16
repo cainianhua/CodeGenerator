@@ -1,0 +1,5 @@
+*.suo
+CodeGenerator/bin/
+CodeGenerator/obj/
+CodeGenerator.Tests/bin/
+CodeGenerator.Tests/obj/
