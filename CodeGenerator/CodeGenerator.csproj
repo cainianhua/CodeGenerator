@@ -64,16 +64,9 @@
     <Reference Include="RazorEngine">
       <HintPath>..\packages\RazorEngine.3.4.1\lib\net45\RazorEngine.dll</HintPath>
     </Reference>
-    <Reference Include="RazorTemplates.Core">
-      <HintPath>..\packages\RazorTemplates.1.2.0\lib\RazorTemplates.Core.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Web.Razor, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <Private>True</Private>
-      <HintPath>..\packages\RazorTemplates.1.2.0\lib\System.Web.Razor.dll</HintPath>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -84,9 +77,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DAO\IColumn.cs" />
-    <Compile Include="DAO\IDatabase.cs" />
-    <Compile Include="DAO\ITable.cs" />
+    <Compile Include="DAO\IColumnProvider.cs" />
+    <Compile Include="DAO\IDatabaseProvider.cs" />
+    <Compile Include="DAO\ITableProvider.cs" />
     <Compile Include="DAO\SqlServer\ColumnProvider.cs" />
     <Compile Include="Connector.cs" />
     <Compile Include="DAO\SqlServer\DatabaseProvider.cs" />

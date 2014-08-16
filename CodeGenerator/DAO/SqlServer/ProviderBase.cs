@@ -12,15 +12,9 @@ namespace CodeGenerator.DAO
 	{
 		// Fields
 		protected const string AT = "@";
-		protected const string FIELD_CREATED_BY = "CreatedBy";
-		protected const string FIELD_CREATED_DATE = "CreatedDate";
-		protected const string FIELD_MODIFIED_BY = "ModifiedBy";
-		protected const string FIELD_MODIFIED_DATE = "ModifiedDate";
-		protected const string FIELD_PAGE_INDEX = "PageIndex";
-		protected const string FIELD_PAGE_SIZE = "PageSize";
-		protected const string FIELD_RETURN_VALUE = "ReturnValue";
-		protected const string FIELD_TOTAL = "Total";
-		protected static readonly string DatabaseConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnectionString"].ConnectionString;
+		protected const string FIELD_CREATED_DATE = "Create_Date";
+		protected const string FIELD_MODIFIED_DATE = "Modify_Date";
+		protected static readonly string dbConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnectionString"].ConnectionString;
 		protected const int TWENTY_FOUR_HOURS = 0x5a0;
 
 		// Methods

@@ -10,7 +10,7 @@ namespace CodeGenerator.VO
 	{
 		public long ColumnId { get; set; }
 		public string Name { get; set; }
-		public string UserType { get; set; }
+		public string UserTypeName { get; set; }
 		public int MaxLength { get; set; }
 		public int Precision { get; set; }
 		public int Scale { get; set; }

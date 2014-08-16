@@ -9,6 +9,6 @@ namespace CodeGenerator.VO
 	public class TableVO : BaseVO
 	{
 		public int TableId { get; set; }
-		public int Name { get; set; }
+		public string Name { get; set; }
 	}
 }
