@@ -1,0 +1,141 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Data;
+using CodeGenerator.VO;
+
+namespace CodeGenerator
+{
+	class TemplateUtils
+	{
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlTypeName"></param>
+		/// <returns></returns>
+		public static string ConvertSqlTypeToSqlDataType( string sqlTypeName ) {
+			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
+			return type.ToString();
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlTypeName"></param>
+		/// <returns></returns>
+		public static string ConvertSqlTypeToCSharp( string sqlTypeName ) {
+			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
+
+			string result = "string";
+			switch ( type ) {
+				case SqlDbType.BigInt:
+					result = "long";
+					break;
+				case SqlDbType.Int:
+					result = "int";
+					break;
+				case SqlDbType.SmallInt:
+				case SqlDbType.TinyInt:
+					result = "short";
+					break;
+				case SqlDbType.Bit:
+					result = "bool";
+					break;
+				case SqlDbType.DateTime:
+				case SqlDbType.SmallDateTime:
+					result = "DateTime";
+					break;
+				case SqlDbType.Char:
+				case SqlDbType.NChar:
+				case SqlDbType.NVarChar:
+				case SqlDbType.VarChar:
+				case SqlDbType.Text:
+				case SqlDbType.NText:
+				default:
+					result = "string";
+					break;
+			}
+			return result;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sqlTypeName"></param>
+		/// <returns></returns>
+		public static string ConvertSqlTypeToCLR( string sqlTypeName ) {
+			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName );
+			
+			string result = "String";
+			switch ( type ) {
+				case SqlDbType.BigInt:
+					result = "Int64";
+					break;
+				case SqlDbType.Int:
+					result = "Int32";
+					break;
+				case SqlDbType.SmallInt:
+					result = "Int16";
+					break;
+				case SqlDbType.TinyInt:
+					result = "Byte";
+					break;
+				case SqlDbType.Bit:
+					result = "Boolean";
+					break;
+				case SqlDbType.DateTime:
+				case SqlDbType.SmallDateTime:
+					result = "DateTime";
+					break;
+				case SqlDbType.Char:
+				case SqlDbType.NChar:
+				case SqlDbType.NVarChar:
+				case SqlDbType.VarChar:
+				case SqlDbType.Text:
+				case SqlDbType.NText:
+				default:
+					result = "String";
+					break;
+			}
+			return result;
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="lst"></param>
+		/// <returns></returns>
+		public static string GetSQLWhereAnd( List<ColumnVO> lst ) {
+			StringBuilder builder = new StringBuilder(lst.Count);
+			builder.Append( "1 = 1" );
+			foreach ( ColumnVO item in lst ) {
+				builder.AppendFormat( "AND [{0}] = @{0}", item.Name );
+			}
+
+			return builder.ToString();
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="lst"></param>
+		/// <returns></returns>
+		public static string GetMethodParameters( List<ColumnVO> lst ) {
+			StringBuilder builder = new StringBuilder( lst.Count );
+			foreach ( ColumnVO item in lst ) {
+				builder.AppendFormat( "{0} {1}, ", ConvertSqlTypeToCSharp(item.UserTypeName), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+			}
+			return builder.ToString().TrimEnd( ',' );
+		}
+
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="lst"></param>
+		/// <returns></returns>
+		public static string GetSQLParameters( List<ColumnVO> lst ) {
+			StringBuilder builder = new StringBuilder( lst.Count );
+			foreach ( ColumnVO item in lst ) {
+				builder.AppendFormat( "SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType(item.UserTypeName), item.MaxLength, item.Name.Substring(0, 1).ToLower() + item.Name.Substring(1) );
+			}
+			return builder.ToString().TrimEnd( ',', '\r', '\n' );
+		}
+	}
+}

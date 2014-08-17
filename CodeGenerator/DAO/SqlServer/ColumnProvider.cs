@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using CodeGenerator.VO;
 
 namespace CodeGenerator.DAO.SqlServer
@@ -15,7 +14,7 @@ namespace CodeGenerator.DAO.SqlServer
 		/// 获取所有字段语句
 		/// </summary>
 		private const string SQL_GET_COLUMES = @"
-SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale, c.create_date, c.modify_date 
+SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale 
 FROM sys.columns c 
 LEFT JOIN sys.objects o ON c.[object_id] = o.[object_id]
 LEFT JOIN sys.types t ON t.user_type_id = c.user_type_id
@@ -25,7 +24,7 @@ WHERE o.name = @Name
 		/// 获取所有主键字段
 		/// </summary>
 		private const string SQL_GET_COLUMES_PK = @"
-SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale, c.create_date, c.modify_date 
+SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale 
 FROM sys.columns c 
 JOIN sys.types t ON t.user_type_id = c.user_type_id
 JOIN sys.index_columns ic on c.[object_id] = ic.[object_id] and c.column_id = ic.column_id
@@ -37,7 +36,7 @@ WHERE o.name = @Name AND i.is_primary_key = 1 and i.is_unique = 1
 		/// 获取所有外键字段
 		/// </summary>
 		private const string SQL_GET_COLUMES_FK = @"
-SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale, c.create_date, c.modify_date 
+SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_length, c.[precision], c.scale 
 FROM sys.columns c 
 JOIN sys.types t ON t.user_type_id = c.user_type_id
 JOIN sys.foreign_key_columns fkc on fkc.parent_object_id = c.[object_id] AND fkc.parent_column_id = c.column_id
@@ -68,7 +67,14 @@ WHERE o.name = @Name AND i.is_primary_key = 0 and i.is_unique = 1
 		private const string FIELD_SCALE = "scale";
 		#endregion
 
-		public List<ColumnVO> GetColumns( string tableName ) {
+		public ColumnProvider() { }
+
+		public ColumnProvider( string dbServer, string dbName ) : this() {
+			this.DbServer = dbServer;
+			this.DbName = dbName;
+		}
+
+		public List<ColumnVO> GetAll(string tableName ) {
 			return GetSQLResults( SQL_GET_COLUMES, tableName );
 		}
 
@@ -89,7 +95,7 @@ WHERE o.name = @Name AND i.is_primary_key = 0 and i.is_unique = 1
 			IDataReader reader = null;
 
 			try {
-				reader = SqlHelper.ExecuteReader( dbConnectionString, CommandType.Text, sql, SqlHelper.MakeInParameter( AT + FIELD_NAME, SqlDbType.NVarChar, 255, tableName ) );
+				reader = SqlHelper.ExecuteReader( DbConnectionString, CommandType.Text, sql, SqlHelper.MakeInParameter( AT + FIELD_NAME, SqlDbType.NVarChar, 255, tableName ) );
 				while (reader.Read()) {
 					columns.Add( LoadColumn( reader ) );
 				}
@@ -110,10 +116,10 @@ WHERE o.name = @Name AND i.is_primary_key = 0 and i.is_unique = 1
 			c.MaxLength = ReadInt( reader, FIELD_MAX_LENGTH );
 			c.Precision = ReadInt( reader, FIELD_PRECISION );
 			c.Scale = ReadInt( reader, FIELD_SCALE );
-			c.CreatedDate = ReadDate( reader, FIELD_CREATED_DATE );
-			c.ModifiedDate = ReadDate( reader, FIELD_MODIFIED_DATE );
+			//c.CreatedDate = ReadDate( reader, FIELD_CREATED_DATE );
+			//c.ModifiedDate = ReadDate( reader, FIELD_MODIFIED_DATE );
 
-			return new ColumnVO();
+			return c;
 		}
 	}
 }

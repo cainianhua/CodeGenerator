@@ -14,8 +14,18 @@ namespace CodeGenerator.DAO
 		protected const string AT = "@";
 		protected const string FIELD_CREATED_DATE = "Create_Date";
 		protected const string FIELD_MODIFIED_DATE = "Modify_Date";
-		protected static readonly string dbConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnectionString"].ConnectionString;
+		//protected static readonly string dbConnectionString = ConfigurationManager.ConnectionStrings["DefaultConnectionString"].ConnectionString;
+		//Initial Catalog=master;Data Source={0};Integrated Security=True;Connect Timeout=5;
+		private static readonly string dbConnectionStringFomatter = "Initial Catalog={1};Data Source={0};Integrated Security=True;";
 		protected const int TWENTY_FOUR_HOURS = 0x5a0;
+
+		protected string DbName { get; set; }
+		protected string DbServer { get; set; }
+		protected string DbConnectionString {
+			get {
+				return string.Format( dbConnectionStringFomatter, this.DbServer, this.DbName );
+			}
+		}
 
 		// Methods
 		protected bool ReadBool(IDataReader reader, string p) {

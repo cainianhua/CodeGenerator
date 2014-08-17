@@ -1,0 +1,18 @@
+﻿@using CodeGenerator
+@using CodeGenerator.VO
+/*
+ * Code Generator v1.0
+ * @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace CodeGenerator.VO {
+    public class @Model.SingularName : BaseVO {
+    @foreach(ColumnVO item in Model.Columns) {
+        @(string.Format("\t\tpublic {0} {1} {{ get; set; }}\r\n", TemplateUtils.ConvertSqlTypeToCSharp(item.UserTypeName), item.Name))
+    }
+    }
+}

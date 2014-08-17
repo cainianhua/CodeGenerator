@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace CodeGenerator.VO
 {
@@ -11,6 +10,15 @@ namespace CodeGenerator.VO
 		public long ColumnId { get; set; }
 		public string Name { get; set; }
 		public string UserTypeName { get; set; }
+		private string _CShareTypeName;
+		public string ClrTypeName {
+			get {
+				if ( string.IsNullOrEmpty( _CShareTypeName ) ) {
+					_CShareTypeName = TemplateUtils.ConvertSqlTypeToCLR( UserTypeName );
+				}
+				return _CShareTypeName;
+			}
+		}
 		public int MaxLength { get; set; }
 		public int Precision { get; set; }
 		public int Scale { get; set; }

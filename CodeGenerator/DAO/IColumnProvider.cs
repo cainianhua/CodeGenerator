@@ -9,7 +9,7 @@ namespace CodeGenerator.DAO
 {
 	interface IColumnProvider
 	{
-		List<ColumnVO> GetColumns( string tableName );
+		List<ColumnVO> GetAll( string tableName );
 		List<ColumnVO> GetPKs( string tableName );
 		List<ColumnVO> GetFKs( string tableName );
 		List<ColumnVO> GetUKs( string tableName );

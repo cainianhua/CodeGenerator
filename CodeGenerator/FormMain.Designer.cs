@@ -46,10 +46,10 @@
 			this.tabPage1 = new System.Windows.Forms.TabPage();
 			this.dataGridView1 = new System.Windows.Forms.DataGridView();
 			this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
+			this.generateCodesButton = new System.Windows.Forms.Button();
+			this.generateSQLButton = new System.Windows.Forms.Button();
 			this.tabPage2 = new System.Windows.Forms.TabPage();
 			this.tabPage3 = new System.Windows.Forms.TabPage();
-			this.button1 = new System.Windows.Forms.Button();
-			this.button2 = new System.Windows.Forms.Button();
 			this.menuStrip1.SuspendLayout();
 			this.statusStrip1.SuspendLayout();
 			this.panel1.SuspendLayout();
@@ -120,7 +120,8 @@
 			// toolStripStatusLabel1
 			// 
 			this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-			this.toolStripStatusLabel1.Size = new System.Drawing.Size(0, 17);
+			this.toolStripStatusLabel1.Size = new System.Drawing.Size(39, 17);
+			this.toolStripStatusLabel1.Text = "Ready";
 			// 
 			// panel1
 			// 
@@ -164,7 +165,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(246, 25);
+			this.label2.Location = new System.Drawing.Point(246, 23);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(87, 13);
 			this.label2.TabIndex = 4;
@@ -173,18 +174,18 @@
 			// txtDbServer
 			// 
 			this.txtDbServer.Anchor = System.Windows.Forms.AnchorStyles.Left;
-			this.txtDbServer.Location = new System.Drawing.Point(51, 22);
+			this.txtDbServer.Location = new System.Drawing.Point(51, 20);
 			this.txtDbServer.Name = "txtDbServer";
 			this.txtDbServer.Size = new System.Drawing.Size(180, 20);
 			this.txtDbServer.TabIndex = 3;
-			this.txtDbServer.Text = "gzdevdb02\\devsql2008";
+			this.txtDbServer.Text = "(local)";
 			this.txtDbServer.Leave += new System.EventHandler(this.txtDbServer_Leave);
 			// 
 			// dbComboBox
 			// 
 			this.dbComboBox.Anchor = System.Windows.Forms.AnchorStyles.Left;
 			this.dbComboBox.FormattingEnabled = true;
-			this.dbComboBox.Location = new System.Drawing.Point(344, 22);
+			this.dbComboBox.Location = new System.Drawing.Point(344, 20);
 			this.dbComboBox.Name = "dbComboBox";
 			this.dbComboBox.Size = new System.Drawing.Size(236, 21);
 			this.dbComboBox.TabIndex = 2;
@@ -192,7 +193,7 @@
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(6, 25);
+			this.label1.Location = new System.Drawing.Point(6, 23);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(41, 13);
 			this.label1.TabIndex = 1;
@@ -200,12 +201,13 @@
 			// 
 			// connectButton
 			// 
-			this.connectButton.Location = new System.Drawing.Point(876, 16);
+			this.connectButton.Location = new System.Drawing.Point(857, 16);
 			this.connectButton.Name = "connectButton";
-			this.connectButton.Size = new System.Drawing.Size(67, 28);
+			this.connectButton.Size = new System.Drawing.Size(86, 28);
 			this.connectButton.TabIndex = 0;
-			this.connectButton.Text = "Connect";
+			this.connectButton.Text = "Load To Grid";
 			this.connectButton.UseVisualStyleBackColor = true;
+			this.connectButton.Click += new System.EventHandler(this.connectButton_Click);
 			// 
 			// tabControl1
 			// 
@@ -242,14 +244,34 @@
 			// 
 			// flowLayoutPanel1
 			// 
-			this.flowLayoutPanel1.Controls.Add(this.button2);
-			this.flowLayoutPanel1.Controls.Add(this.button1);
+			this.flowLayoutPanel1.Controls.Add(this.generateCodesButton);
+			this.flowLayoutPanel1.Controls.Add(this.generateSQLButton);
 			this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
 			this.flowLayoutPanel1.FlowDirection = System.Windows.Forms.FlowDirection.RightToLeft;
 			this.flowLayoutPanel1.Location = new System.Drawing.Point(1, 433);
 			this.flowLayoutPanel1.Name = "flowLayoutPanel1";
 			this.flowLayoutPanel1.Size = new System.Drawing.Size(943, 28);
 			this.flowLayoutPanel1.TabIndex = 0;
+			// 
+			// generateCodesButton
+			// 
+			this.generateCodesButton.Location = new System.Drawing.Point(840, 3);
+			this.generateCodesButton.Name = "generateCodesButton";
+			this.generateCodesButton.Size = new System.Drawing.Size(100, 23);
+			this.generateCodesButton.TabIndex = 5;
+			this.generateCodesButton.Text = "Generate Codes";
+			this.generateCodesButton.UseVisualStyleBackColor = true;
+			this.generateCodesButton.Click += new System.EventHandler(this.generateCodesButton_Click);
+			// 
+			// generateSQLButton
+			// 
+			this.generateSQLButton.Location = new System.Drawing.Point(735, 3);
+			this.generateSQLButton.Name = "generateSQLButton";
+			this.generateSQLButton.Size = new System.Drawing.Size(99, 23);
+			this.generateSQLButton.TabIndex = 4;
+			this.generateSQLButton.Text = "Generate SQL";
+			this.generateSQLButton.UseVisualStyleBackColor = true;
+			this.generateSQLButton.Click += new System.EventHandler(this.generateSQLButton_Click);
 			// 
 			// tabPage2
 			// 
@@ -270,24 +292,6 @@
 			this.tabPage3.TabIndex = 2;
 			this.tabPage3.Text = "Procedures";
 			this.tabPage3.UseVisualStyleBackColor = true;
-			// 
-			// button1
-			// 
-			this.button1.Location = new System.Drawing.Point(735, 3);
-			this.button1.Name = "button1";
-			this.button1.Size = new System.Drawing.Size(99, 23);
-			this.button1.TabIndex = 4;
-			this.button1.Text = "Generate SQL";
-			this.button1.UseVisualStyleBackColor = true;
-			// 
-			// button2
-			// 
-			this.button2.Location = new System.Drawing.Point(840, 3);
-			this.button2.Name = "button2";
-			this.button2.Size = new System.Drawing.Size(100, 23);
-			this.button2.TabIndex = 5;
-			this.button2.Text = "Generate Codes";
-			this.button2.UseVisualStyleBackColor = true;
 			// 
 			// FormMain
 			// 
@@ -342,7 +346,7 @@
 		private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
 		private System.Windows.Forms.TabPage tabPage3;
 		private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-		private System.Windows.Forms.Button button1;
-		private System.Windows.Forms.Button button2;
+		private System.Windows.Forms.Button generateSQLButton;
+		private System.Windows.Forms.Button generateCodesButton;
 	}
 }

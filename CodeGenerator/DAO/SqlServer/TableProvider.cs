@@ -19,12 +19,18 @@ WHERE type in ('U')
 		private const string FIELD_TABLE_ID = "TableId";
 		private const string FIELD_NAME = "name";
 
+		public TableProvider() { }
 
-		public List<TableVO> GetTables( string dbName ) {
+		public TableProvider( string dbServer, string dbName ) : this() {
+			this.DbServer = dbServer;
+			this.DbName = dbName;
+		}
+
+		public List<TableVO> GetTables() {
 			List<TableVO> tables = new List<TableVO>();
 			IDataReader reader = null;
 			try {
-				reader = SqlHelper.ExecuteReader( dbConnectionString, CommandType.Text, SQL_GET_TABLES );
+				reader = SqlHelper.ExecuteReader( DbConnectionString, CommandType.Text, SQL_GET_TABLES );
 				while (reader.Read()) {
 					tables.Add( LoadTable( reader ) );
 				}
@@ -44,7 +50,7 @@ WHERE type in ('U')
 			t.CreatedDate = ReadDate( reader, FIELD_CREATED_DATE );
 			t.ModifiedDate = ReadDate( reader, FIELD_MODIFIED_DATE );
 
-			return new TableVO();
+			return t;
 		}
 	}
 }
