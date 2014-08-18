@@ -7,7 +7,7 @@ using CodeGenerator.VO;
 
 namespace CodeGenerator
 {
-	class TemplateUtils
+	public class TemplateUtils
 	{
 		/// <summary>
 		/// 
@@ -63,7 +63,7 @@ namespace CodeGenerator
 		/// <param name="sqlTypeName"></param>
 		/// <returns></returns>
 		public static string ConvertSqlTypeToCLR( string sqlTypeName ) {
-			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName );
+			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
 			
 			string result = "String";
 			switch ( type ) {
@@ -107,7 +107,7 @@ namespace CodeGenerator
 			StringBuilder builder = new StringBuilder(lst.Count);
 			builder.Append( "1 = 1" );
 			foreach ( ColumnVO item in lst ) {
-				builder.AppendFormat( "AND [{0}] = @{0}", item.Name );
+				builder.AppendFormat( " AND [{0}] = @{0}", item.Name );
 			}
 
 			return builder.ToString();
@@ -122,8 +122,20 @@ namespace CodeGenerator
 			foreach ( ColumnVO item in lst ) {
 				builder.AppendFormat( "{0} {1}, ", ConvertSqlTypeToCSharp(item.UserTypeName), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
 			}
-			return builder.ToString().TrimEnd( ',' );
+			return builder.ToString().TrimEnd( ',', ' ' );
 		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <returns></returns>
+        public static string GetMethodCallParameters( List<ColumnVO> lst ) {
+            StringBuilder builder = new StringBuilder( lst.Count );
+            foreach ( ColumnVO item in lst ) {
+                builder.AppendFormat( "{0}, ", item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+            }
+            return builder.ToString().TrimEnd( ',', ' ' );
+        }
 
 		/// <summary>
 		/// 
@@ -137,5 +149,21 @@ namespace CodeGenerator
 			}
 			return builder.ToString().TrimEnd( ',', '\r', '\n' );
 		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static string GetProcTypeString( ColumnVO c ) {
+            switch ( c.UserTypeName ) {
+                case "nvarchar":
+                case "nchar":
+                    return ( c.UserTypeName + "(" + ( ( c.MaxLength == -1 ) ? "max" : ( ( c.MaxLength / 2 ) ).ToString() ) + ")" );
+                case "varchar":
+                case "char":
+                    return ( c.UserTypeName + "(" + ( ( c.MaxLength == -1 ) ? "max" : c.MaxLength.ToString() ) + ")" );
+            }
+            return c.UserTypeName;
+        }
 	}
 }

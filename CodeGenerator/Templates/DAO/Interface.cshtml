@@ -1,0 +1,40 @@
+﻿@using CodeGenerator
+@using CodeGenerator.VO
+/*
+ * Code Generator v1.0
+ * @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using @(Model.Namespace).VO;
+
+namespace @(Model.Namespace).DAO 
+{
+    public interface I@(Model.NameS)Provider 
+    {
+@if ( Model.PKs.Count > 0 ) {
+    @(string.Format(@"
+        {0}VO GetItemByPK( {1} );
+
+        void DeleteItemByPK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+}
+
+@if ( Model.FKs.Count > 0 ) {
+    @(string.Format(@"
+        List<{0}VO> GetItemsByFK( {1} );
+
+        void DeleteItemsByFK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+}
+
+@if ( Model.UKs.Count > 0 ) {
+    @(string.Format(@"
+        {0}VO GetItemByUK( {1} );
+
+        void DeleteItemByUK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+}
+
+        void SaveOrUpdateItem( @(Model.NameS)VO item );
+    }
+}

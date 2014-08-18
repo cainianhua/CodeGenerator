@@ -1,0 +1,55 @@
+﻿@using CodeGenerator
+@using CodeGenerator.VO
+USE [@Model.Namespace]
+GO
+
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+
+IF OBJECT_ID('USP_Save_@(Model.NameS)', 'P') IS NOT NULL
+BEGIN
+    DROP PROCEDURE USP_Save_@(Model.NameS)
+END
+GO
+
+/*********************************************************************
+    Author      : Code Generator v1.0
+    CreatedDate : @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+    UpdatedDate : @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+    Description : Save or update a @(Model.NameS)
+*********************************************************************/
+CREATE PROCEDURE [dbo].[USP_Save_@(Model.NameS)] (
+@for ( int i = 0; i < Model.Columns.Count; i++ ) {
+    @(string.Format("    {0}@{1}\t{2}\r\n", i == 0 ? " " : ",", Model.Columns[i].Name, TemplateUtils.GetProcTypeString( Model.Columns[i] )))
+}
+@if(Model.Columns[0].IsIdentity) {
+    @(string.Format("    ,@ReturnValue\t{0} OUTPUT\r\n", Model.Columns[0].UserTypeName))
+}
+)
+AS
+BEGIN
+    SET @@ReturnValue = @@@Model.Columns[0].Name
+    IF NOT EXISTS(SELECT 1 FROM [@(Model.Name)] WHERE [@Model.Columns[0].Name] = @@@Model.Columns[0].Name)
+    BEGIN
+        INSERT INTO [dbo].[@(Model.Name)] 
+                @for ( int i = 0; i < Model.Columns.Count; i++ ) {
+                    @(string.Format("                   {0}[{1}]{2}\r\n", i == 0 ? "(" : ",", Model.Columns[i].Name, i == Model.Columns.Count - 1 ? ")" : ""))
+                }
+             VALUES 
+                @for ( int i = 0; i < Model.Columns.Count; i++ ) {
+                    @(string.Format("                   {0}@{1}{2}\r\n", i == 0 ? "(" : ",", Model.Columns[i].Name, i == Model.Columns.Count - 1 ? ")" : ""))
+                }
+        SET @@ReturnValue = SCOPE_IDENTITY()
+    END
+    ELSE
+    BEGIN
+        UPDATE [dbo].[@(Model.Name)]
+        @for ( int i = 0; i < Model.Columns.Count; i++ ) {
+            @(string.Format("        {0}[{1}] = @{1}\r\n", i == 0 ? "   SET " : "      ,", Model.Columns[i].Name))
+        }
+         WHERE @Model.Columns[0].Name = @@@Model.Columns[0].Name
+    END
+END
+

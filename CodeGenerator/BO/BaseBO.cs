@@ -24,7 +24,10 @@ namespace CodeGenerator.BO
 			this.DbName = dbName;
 			this.TableName = tableName;
 		}
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
 		protected virtual object CreateProvider() {
 			//Assembly.GetExecutingAssembly().GetName().Name
 			return Assembly.Load( path ).CreateInstance( 

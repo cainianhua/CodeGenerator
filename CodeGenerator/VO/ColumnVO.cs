@@ -22,5 +22,6 @@ namespace CodeGenerator.VO
 		public int MaxLength { get; set; }
 		public int Precision { get; set; }
 		public int Scale { get; set; }
+        public bool IsIdentity { get; set; }
 	}
 }

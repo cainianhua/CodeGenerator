@@ -1,0 +1,140 @@
+﻿@using CodeGenerator
+@using CodeGenerator.VO
+/*
+ * Code Generator v1.0
+ * @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+ */
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Text;
+using @(Model.Namespace).VO;
+
+namespace @(Model.Namespace).DAO.SqlServer 
+{
+    internal class @(Model.NameS)Provider : ProviderBase, I@(Model.NameS)Provider 
+    {
+        #region SQLs
+@if ( Model.PKs.Count > 0 ) {
+    @(string.Format( 
+@"        private const string SQL_GET_{0}_PK = ""SELECT * FROM {1} WHERE {2}"";
+        private const string SQL_DELETE_{0}_PK = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( Model.PKs ) ))
+}
+
+@if ( Model.FKs.Count > 0 ) {
+    @(string.Format( 
+@"        private const string SQL_GET_{0}_FK = ""SELECT * FROM {1} WHERE {2}"";
+        private const string SQL_DELETE_{0}_FK = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( Model.FKs ) ))
+}
+
+@if ( Model.UKs.Count > 0 ) {
+    @(string.Format( 
+@"        private const string SQL_GET_{0}_UK = ""SELECT * FROM {1} WHERE {2}"";
+        private const string SQL_DELETE_{0}_UK = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( Model.UKs ) ))
+}
+
+        private const string PROC_SAVE_@(Model.NameS.ToUpper()) = "USP_Save_@(Model.NameS)";
+        #endregion
+
+        #region Fields
+@foreach ( ColumnVO item in Model.Columns ) {
+    @(string.Format( "        private const string FIELD_{0} = \"{1}\";\r\n", item.Name.ToUpper(), item.Name ))
+}
+        #endregion
+
+        #region Methods
+@if ( Model.PKs.Count > 0 ) {
+    @(string.Format( 
+@"        public {0}VO GetItemByPK({1}) {{
+            {0}VO item = null;
+            SqlParameter[] p = new SqlParameter[] {{ 
+                {3}
+            }};
+            List<{0}VO> items = GetSQLResults( SQL_GET_{2}_PK, p);
+            if (items.Count > 0) item = items[0];
+            return item;
+        }}
+
+        public void DeleteItemByPK({1}) {{
+            SqlParameter[] p = {3};
+            SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_PK, p);
+        }}
+        ", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.PKs )))
+}
+        @if ( Model.FKs.Count > 0 ) {
+            @(string.Format( 
+@"        public List<{0}VO> GetItemsByFK({1}) {{
+            SqlParameter[] p = new SqlParameter[] {{ 
+                {3}
+            }};
+            return GetSQLResults( SQL_GET_{2}_FK, p);
+        }}
+
+        public void DeleteItemsByFK({1}) {{
+            SqlParameter[] p = new SqlParameter[] {{ 
+                {3}
+            }};
+            SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_FK, p);
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.FKs )))
+        }
+        @if ( Model.UKs.Count > 0 ) {
+            @(string.Format( 
+@"        /// <summary>
+        /// Get item according to unique key.
+        /// </summary>
+        public {0}VO GetItemByUK({1}) {{
+            {0}VO item = null;
+            SqlParameter[] p = {3};
+            List<{0}VO> items = GetSQLResults( SQL_GET_{2}_UK, p);
+            if (items.Count > 0) item = items[0];
+            return item;
+        }}
+        /// <summary>
+        /// Delete item according to unique key.
+        /// </summary>
+        public void DeleteItemsByUK({1}) {{
+            SqlParameter[] p = new SqlParameter[] {{ 
+                {3}
+            }};
+            SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_UK, p);
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.UKs )))
+        }
+
+        public void SaveOrUpdateItem(@(Model.NameS)VO item) {
+            SqlParameter[] p = new SqlParameter[] {
+                @(TemplateUtils.GetSQLParameters(Model.Columns))
+            };
+            SqlHelper.ExecuteScale(dbConnectionString, CommandType.StoredProcedure, USP_SAVE_ITEM, p);
+        }
+        #endregion
+
+        #region Helpers
+        private List<@(Model.NameS)VO> GetSQLResults(string sql, SqlParameter[] p) {
+            List<@(Model.NameS)VO> entities = new List<@(Model.NameS)VO>();
+            IDataReader reader = null;
+
+            try {
+                reader = SqlHelper.ExecuteReader( dbConnectionString, CommandType.Text, sql, p );
+                while (reader.Read()) {
+                    entities.Add( Load@(Model.NameS)( reader ) );
+                }
+            }
+            finally {
+                if (reader != null && !reader.IsClosed)
+                    reader.Close();
+                }
+            }
+            return entities;
+        }
+
+        private @(Model.NameS)VO Load@(Model.NameS)(IDataReader reader) {
+            @(Model.NameS)VO item = new @(Model.NameS)VO();
+        @foreach ( ColumnVO c in Model.Columns ) {
+            @(string.Format("            item.{0} = Read{1}( reader, FIELD_{2} );\r\n", c.Name, c.ClrTypeName, c.Name.ToUpper()))
+        }
+            return item;
+        }
+        #endregion
+    }
+}

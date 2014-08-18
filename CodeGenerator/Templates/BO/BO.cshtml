@@ -1,0 +1,58 @@
+﻿@using CodeGenerator
+@using CodeGenerator.VO
+/*
+ * Code Generator v1.0
+ * @DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")
+ */
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using @(Model.Namespace).DAO;
+using @(Model.Namespace).VO;
+
+namespace @(Model.Namespace).BO 
+{
+    public class @(Model.NameS)BO : BaseBO 
+    {
+        private I@(Model.NameS)Provider provider;
+
+@if ( Model.PKs.Count > 0 ) {
+    @(string.Format(@"
+        public {0}VO GetItemByPK( {1} ) {{
+            return provider.GetItemByPK( {2} );
+        }}
+
+        public void DeleteItemByPK( {1} ) {{
+            provider.DeleteItemByPK( {2} );
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
+}
+
+@if ( Model.FKs.Count > 0 ) {
+    @(string.Format(@"
+        public List<{0}VO> GetItemsByFK( {1} ) {{
+            return provider.GetItemsByFK( {2} );
+        }}
+
+        public void DeleteItemsByFK( {1} ) {{
+            provider.DeleteItemsByFK( {2} );
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
+}
+
+@if ( Model.UKs.Count > 0 ) {
+    @(string.Format(@"
+        public {0}VO GetItemByUK( {1} ) {{
+            return provider.GetItemByUK( {2} );
+        }}
+
+        public void DeleteItemByUK( {1} ) {{
+            provider.DeleteItemByUK( {2} );
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
+}
+
+        public void SaveOrUpdateItem( @(Model.NameS)VO item ) {
+            if (item == null ) return;
+            provider.SaveOrUpdateItem( item );
+        }
+    }
+}
