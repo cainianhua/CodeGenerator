@@ -17,6 +17,10 @@ namespace @(Model.Namespace).BO
     {
         private I@(Model.NameS)Provider provider;
 
+        public @(Model.NameS)BO() {
+            provider = (I@(Model.NameS)Provider)this.CreateProvider("@(Model.NameS)");
+        }
+
 @if ( Model.PKs.Count > 0 ) {
     @(string.Format(@"
         public {0}VO GetItemByPK( {1} ) {{
@@ -36,7 +40,7 @@ namespace @(Model.Namespace).BO
 
         public void DeleteItemsByFK( {1} ) {{
             provider.DeleteItemsByFK( {2} );
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs ), TemplateUtils.GetMethodCallParameters( Model.FKs )))
 }
 
 @if ( Model.UKs.Count > 0 ) {
@@ -47,7 +51,7 @@ namespace @(Model.Namespace).BO
 
         public void DeleteItemByUK( {1} ) {{
             provider.DeleteItemByUK( {2} );
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
+        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), TemplateUtils.GetMethodCallParameters( Model.UKs )))
 }
 
         public void SaveOrUpdateItem( @(Model.NameS)VO item ) {

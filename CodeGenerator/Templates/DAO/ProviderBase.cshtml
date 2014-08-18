@@ -37,19 +37,27 @@ namespace @(Model.Namespace).DAO.SqlServer
             return reader[p] == DBNull.Value ? string.Empty : Convert.ToString(reader[p]);
         }
 
-        protected int ReadInt(IDataReader reader, string p) {
+        protected int ReadByte(IDataReader reader, string p) {
+            return reader[p] == DBNull.Value ? 0 : Convert.ToByte(reader[p]);
+        }
+
+        protected int ReadInt16(IDataReader reader, string p) {
+            return reader[p] == DBNull.Value ? 0 : Convert.ToInt16(reader[p]);
+        }
+
+        protected int ReadInt32(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? 0 : Convert.ToInt32(reader[p]);
         }
 
-        protected long ReadLong(IDataReader reader, string p) {
+        protected long ReadInt64(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? 0 : Convert.ToInt64(reader[p]);
         }
 
-        protected DateTime ReadDate(IDataReader reader, string p) {
+        protected DateTime ReadDateTime(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? DateTime.MinValue : Convert.ToDateTime(reader[p]);
         }
 
-        protected bool ReadBool(IDataReader reader, string p) {
+        protected bool ReadBoolean(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? false : Convert.ToBoolean(reader[p]);
         }
     }

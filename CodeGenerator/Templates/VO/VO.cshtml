@@ -11,9 +11,9 @@ using System.Text;
 
 namespace @(Model.Namespace).VO 
 {
-    public class @Model.NameS : BaseVO {
+    public class @(Model.NameS)VO : BaseVO {
     @foreach(ColumnVO item in Model.Columns) {
-        @(string.Format("\t\tpublic {0} {1} {{ get; set; }}\r\n", TemplateUtils.ConvertSqlTypeToCSharp(item.UserTypeName), item.Name))
+        @(string.Format( "        public {0} {1} {{ get; set; }}\r\n", TemplateUtils.ConvertSqlTypeToCSharp( item.UserTypeName ), item.Name ))
     }
     }
 }

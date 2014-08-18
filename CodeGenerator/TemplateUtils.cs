@@ -15,7 +15,10 @@ namespace CodeGenerator
 		/// <param name="sqlTypeName"></param>
 		/// <returns></returns>
 		public static string ConvertSqlTypeToSqlDataType( string sqlTypeName ) {
-			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
+			SqlDbType type;
+			if ( !Enum.TryParse<SqlDbType>( sqlTypeName, true, out type ) ) {
+				type = SqlDbType.NVarChar;
+			}
 			return type.ToString();
 		}
 		/// <summary>
@@ -24,7 +27,10 @@ namespace CodeGenerator
 		/// <param name="sqlTypeName"></param>
 		/// <returns></returns>
 		public static string ConvertSqlTypeToCSharp( string sqlTypeName ) {
-			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
+			SqlDbType type;
+			if ( !Enum.TryParse<SqlDbType>( sqlTypeName, true, out type ) ) {
+				type = SqlDbType.NVarChar;
+			}
 
 			string result = "string";
 			switch ( type ) {
@@ -63,7 +69,10 @@ namespace CodeGenerator
 		/// <param name="sqlTypeName"></param>
 		/// <returns></returns>
 		public static string ConvertSqlTypeToCLR( string sqlTypeName ) {
-			SqlDbType type = (SqlDbType)Enum.Parse( typeof( SqlDbType ), sqlTypeName, true );
+			SqlDbType type;
+			if ( !Enum.TryParse<SqlDbType>( sqlTypeName, true, out type ) ) {
+				type = SqlDbType.NVarChar;
+			}
 			
 			string result = "String";
 			switch ( type ) {
@@ -145,7 +154,19 @@ namespace CodeGenerator
 		public static string GetSQLParameters( List<ColumnVO> lst ) {
 			StringBuilder builder = new StringBuilder( lst.Count );
 			foreach ( ColumnVO item in lst ) {
-				builder.AppendFormat( "SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType(item.UserTypeName), item.MaxLength, item.Name.Substring(0, 1).ToLower() + item.Name.Substring(1) );
+				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+			}
+			return builder.ToString().TrimEnd( ',', '\r', '\n' );
+		}
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="lst"></param>
+		/// <returns></returns>
+		public static string GetSaveSQLParameters( List<ColumnVO> lst ) {
+			StringBuilder builder = new StringBuilder( lst.Count );
+			foreach ( ColumnVO item in lst ) {
+				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, item.{3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name );
 			}
 			return builder.ToString().TrimEnd( ',', '\r', '\n' );
 		}

@@ -25,14 +25,14 @@ namespace @(Model.Namespace).DAO
     @(string.Format(@"
         List<{0}VO> GetItemsByFK( {1} );
 
-        void DeleteItemsByFK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+        void DeleteItemsByFK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs )))
 }
 
 @if ( Model.UKs.Count > 0 ) {
     @(string.Format(@"
         {0}VO GetItemByUK( {1} );
 
-        void DeleteItemByUK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+        void DeleteItemByUK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs )))
 }
 
         void SaveOrUpdateItem( @(Model.NameS)VO item );

@@ -7,6 +7,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using @(Model.Namespace).VO;
@@ -34,7 +35,7 @@ namespace @(Model.Namespace).DAO.SqlServer
         private const string SQL_DELETE_{0}_UK = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( Model.UKs ) ))
 }
 
-        private const string PROC_SAVE_@(Model.NameS.ToUpper()) = "USP_Save_@(Model.NameS)";
+        private const string PROC_SAVE_@Model.NameS.ToUpper() = "USP_Save_@(Model.NameS)";
         #endregion
 
         #region Fields
@@ -45,11 +46,11 @@ namespace @(Model.Namespace).DAO.SqlServer
 
         #region Methods
 @if ( Model.PKs.Count > 0 ) {
-    @(string.Format( 
-@"        public {0}VO GetItemByPK({1}) {{
+    @(string.Format(
+    @"        public {0}VO GetItemByPK({1}) {{
             {0}VO item = null;
             SqlParameter[] p = new SqlParameter[] {{ 
-                {3}
+{3}
             }};
             List<{0}VO> items = GetSQLResults( SQL_GET_{2}_PK, p);
             if (items.Count > 0) item = items[0];
@@ -57,7 +58,9 @@ namespace @(Model.Namespace).DAO.SqlServer
         }}
 
         public void DeleteItemByPK({1}) {{
-            SqlParameter[] p = {3};
+            SqlParameter[] p = new SqlParameter[] {{ 
+{3}
+            }};
             SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_PK, p);
         }}
         ", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.PKs )))
@@ -66,26 +69,28 @@ namespace @(Model.Namespace).DAO.SqlServer
             @(string.Format( 
 @"        public List<{0}VO> GetItemsByFK({1}) {{
             SqlParameter[] p = new SqlParameter[] {{ 
-                {3}
+{3}
             }};
             return GetSQLResults( SQL_GET_{2}_FK, p);
         }}
 
         public void DeleteItemsByFK({1}) {{
             SqlParameter[] p = new SqlParameter[] {{ 
-                {3}
+{3}
             }};
             SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_FK, p);
         }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.FKs )))
         }
         @if ( Model.UKs.Count > 0 ) {
-            @(string.Format( 
-@"        /// <summary>
+            @(string.Format(
+    @"        /// <summary>
         /// Get item according to unique key.
         /// </summary>
         public {0}VO GetItemByUK({1}) {{
             {0}VO item = null;
-            SqlParameter[] p = {3};
+            SqlParameter[] p = new SqlParameter[] {{ 
+{3}
+            }};
             List<{0}VO> items = GetSQLResults( SQL_GET_{2}_UK, p);
             if (items.Count > 0) item = items[0];
             return item;
@@ -93,9 +98,9 @@ namespace @(Model.Namespace).DAO.SqlServer
         /// <summary>
         /// Delete item according to unique key.
         /// </summary>
-        public void DeleteItemsByUK({1}) {{
+        public void DeleteItemByUK({1}) {{
             SqlParameter[] p = new SqlParameter[] {{ 
-                {3}
+{3}
             }};
             SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_UK, p);
         }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.UKs )))
@@ -103,9 +108,9 @@ namespace @(Model.Namespace).DAO.SqlServer
 
         public void SaveOrUpdateItem(@(Model.NameS)VO item) {
             SqlParameter[] p = new SqlParameter[] {
-                @(TemplateUtils.GetSQLParameters(Model.Columns))
+@(TemplateUtils.GetSaveSQLParameters( Model.Columns ))
             };
-            SqlHelper.ExecuteScale(dbConnectionString, CommandType.StoredProcedure, USP_SAVE_ITEM, p);
+            SqlHelper.ExecuteScalar(dbConnectionString, CommandType.StoredProcedure, PROC_SAVE_@Model.NameS.ToUpper(), p);
         }
         #endregion
 
@@ -123,8 +128,8 @@ namespace @(Model.Namespace).DAO.SqlServer
             finally {
                 if (reader != null && !reader.IsClosed)
                     reader.Close();
-                }
             }
+            
             return entities;
         }
 
