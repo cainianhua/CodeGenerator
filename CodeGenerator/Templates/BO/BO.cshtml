@@ -21,26 +21,29 @@ namespace @(Model.Namespace).BO
             provider = (I@(Model.NameS)Provider)this.CreateProvider("@(Model.NameS)");
         }
 
+        public List<@(Model.NameS)VO> GetItems() {
+            return provider.GetItems();
+        }
 @if ( Model.PKs.Count > 0 ) {
     @(string.Format(@"
-        public {0}VO GetItemByPK( {1} ) {{
-            return provider.GetItemByPK( {2} );
+        public {0}VO GetItem( {1} ) {{
+            return provider.GetItem( {2} );
         }}
 
-        public void DeleteItemByPK( {1} ) {{
-            provider.DeleteItemByPK( {2} );
+        public void DeleteItem( {1} ) {{
+            provider.DeleteItem( {2} );
         }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs ), TemplateUtils.GetMethodCallParameters( Model.PKs )))
 }
 
-@if ( Model.FKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.FKs ) {
     @(string.Format(@"
-        public List<{0}VO> GetItemsByFK( {1} ) {{
-            return provider.GetItemsByFK( {2} );
+        public List<{0}VO> GetItemsBy{3}( {1} ) {{
+            return provider.GetItemsBy{3}( {2} );
         }}
 
-        public void DeleteItemsByFK( {1} ) {{
-            provider.DeleteItemsByFK( {2} );
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs ), TemplateUtils.GetMethodCallParameters( Model.FKs )))
+        public void DeleteItemsBy{3}( {1} ) {{
+            provider.DeleteItemsBy{3}( {2} );
+        }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), TemplateUtils.GetMethodCallParameter( item ), item.Name ))
 }
 
 @if ( Model.UKs.Count > 0 ) {
@@ -53,6 +56,7 @@ namespace @(Model.Namespace).BO
             provider.DeleteItemByUK( {2} );
         }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), TemplateUtils.GetMethodCallParameters( Model.UKs )))
 }
+
 
         public void SaveOrUpdateItem( @(Model.NameS)VO item ) {
             if (item == null ) return;

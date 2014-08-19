@@ -112,15 +112,23 @@ namespace CodeGenerator
 		/// </summary>
 		/// <param name="lst"></param>
 		/// <returns></returns>
-		public static string GetSQLWhereAnd( List<ColumnVO> lst ) {
-			StringBuilder builder = new StringBuilder(lst.Count);
-			builder.Append( "1 = 1" );
-			foreach ( ColumnVO item in lst ) {
-				builder.AppendFormat( " AND [{0}] = @{0}", item.Name );
-			}
-
-			return builder.ToString();
+		public static string GetSQLWhereAnd( ColumnVO item ) {
+            return string.Format( "[{0}] = @{0}", item.Name );
 		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <returns></returns>
+        public static string GetSQLWhereAnds( List<ColumnVO> lst ) {
+            StringBuilder builder = new StringBuilder( lst.Count + 1 );
+            builder.Append( "1 = 1" );
+            foreach ( ColumnVO item in lst ) {
+                builder.AppendFormat( " AND [{0}] = @{0}", item.Name );
+            }
+
+            return builder.ToString();
+        }
 		/// <summary>
 		/// 
 		/// </summary>
@@ -131,8 +139,16 @@ namespace CodeGenerator
 			foreach ( ColumnVO item in lst ) {
 				builder.AppendFormat( "{0} {1}, ", ConvertSqlTypeToCSharp(item.UserTypeName), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
 			}
-			return builder.ToString().TrimEnd( ',', ' ' );
-		}
+            return builder.ToString().TrimEnd( ',', ' ' );
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static string GetMethodParameter( ColumnVO item ) {
+            return string.Format( "{0} {1}", ConvertSqlTypeToCSharp( item.UserTypeName ), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+        }
         /// <summary>
         /// 
         /// </summary>
@@ -144,6 +160,14 @@ namespace CodeGenerator
                 builder.AppendFormat( "{0}, ", item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
             }
             return builder.ToString().TrimEnd( ',', ' ' );
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public static string GetMethodCallParameter( ColumnVO item ) {
+            return string.Format( "{0}", item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
         }
 
 		/// <summary>

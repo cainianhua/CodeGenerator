@@ -13,6 +13,10 @@ namespace @(Model.Namespace).VO
 {
     public class BaseVO 
     {
+        public DateTime CreatedDate { get; internal set; }
+        public string CreatedBy { get; internal set; }
+        public DateTime ModifiedDate { get; internal set; }
+        public string ModifiedBy { get; internal set; }
         public DateTime ActionDate { get; set; }
         public string ActionBy { get; set; }
     }

@@ -14,18 +14,19 @@ namespace @(Model.Namespace).DAO
 {
     public interface I@(Model.NameS)Provider 
     {
+        List<@(Model.NameS)VO> GetItems();
 @if ( Model.PKs.Count > 0 ) {
     @(string.Format(@"
-        {0}VO GetItemByPK( {1} );
+        {0}VO GetItem( {1} );
 
-        void DeleteItemByPK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
+        void DeleteItem( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.PKs )))
 }
 
-@if ( Model.FKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.FKs ) {
     @(string.Format(@"
-        List<{0}VO> GetItemsByFK( {1} );
+        List<{0}VO> GetItemsBy{2}( {1} );
 
-        void DeleteItemsByFK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs )))
+        void DeleteItemsBy{2}( {1} );", Model.NameS, TemplateUtils.GetMethodParameter( item ), item.Name))
 }
 
 @if ( Model.UKs.Count > 0 ) {

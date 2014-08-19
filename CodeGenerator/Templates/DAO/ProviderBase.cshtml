@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Data;
 using System.Configuration;
+using @(Model.Namespace).VO;
 
 namespace @(Model.Namespace).DAO.SqlServer
 {
@@ -32,6 +33,13 @@ namespace @(Model.Namespace).DAO.SqlServer
 		protected const string FIELD_ACTION_BY = "ActionBy";
 
         protected const int TWENTY_FOUR_HOURS = 1440;   // cache duration(minutes)
+
+        protected void SetBaseProperties(IDataReader reader, BaseVO item) {
+            item.CreatedDate = ReadDateTime(reader, FIELD_CREATED_DATE);
+			item.CreatedBy = ReadString(reader, FIELD_CREATED_BY);
+			item.ModifiedDate = ReadDateTime(reader, FIELD_MODIFIED_DATE);
+			item.ModifiedBy = ReadString(reader, FIELD_MODIFIED_BY);
+        }
 
         protected string ReadString(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? string.Empty : Convert.ToString(reader[p]);
