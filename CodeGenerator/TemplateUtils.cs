@@ -182,6 +182,14 @@ namespace CodeGenerator
 			}
 			return builder.ToString().TrimEnd( ',', '\r', '\n' );
 		}
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="lst"></param>
+        /// <returns></returns>
+        public static string GetSQLParameter( ColumnVO item ) {
+            return string.Format( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} )", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+        }
 		/// <summary>
 		/// 
 		/// </summary>

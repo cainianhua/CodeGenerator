@@ -22,7 +22,7 @@ namespace CodeGenerator.VO
                     //if ( _NameSingular.EndsWith( "ies" ) ) _NameSingular = Regex.Replace( _NameSingular, @"^(.+)ies$", "$1y" );
                     //if ( _NameSingular.EndsWith( "es" ) ) _NameSingular = Regex.Replace( _NameSingular, @"^(.+)es$", "$1" );
                     //if ( _NameSingular.EndsWith( "s" ) ) _NameSingular = Regex.Replace( _NameSingular, @"^(.+)s$", "$1" );
-                    _NameSingular = PluralizationService.CreateService( new CultureInfo( "en" ) ).Singularize( Name );
+                    _NameSingular = PluralizationService.CreateService( new CultureInfo( "en" ) ).Singularize( Name.Replace( "_", "" ) );
 				}
 				return _NameSingular;
 			}

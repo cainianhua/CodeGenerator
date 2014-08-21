@@ -52,7 +52,7 @@ namespace @(Model.Namespace).DAO.SqlServer
 
 @if ( Model.PKs.Count > 0 ) {
     @(string.Format(
-    @"        public {0}VO GetItem({1}) {{
+@"        public {0}VO GetItem({1}) {{
             {0}VO item = null;
             SqlParameter[] p = new SqlParameter[] {{ 
 {3}
@@ -84,11 +84,11 @@ namespace @(Model.Namespace).DAO.SqlServer
 {3}
             }};
             SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_BY_{5}, p);
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.FKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.FKs ), item.Name, item.Name.ToUpper() ))
+        }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameter( item ), item.Name, item.Name.ToUpper() ))
 }
 @if ( Model.UKs.Count > 0 ) {
     @(string.Format(
-    @"        /// <summary>
+@"        /// <summary>
         /// Get item according to unique key.
         /// </summary>
         public {0}VO GetItemByUK({1}) {{
