@@ -58,9 +58,9 @@ namespace @(Model.Namespace).BO
 }
 
 
-        public void SaveOrUpdateItem( @(Model.NameS)VO item ) {
-            if (item == null ) return;
-            provider.SaveOrUpdateItem( item );
+        public int SaveOrUpdateItem( @(Model.NameS)VO item ) {
+            if (item == null ) return -1;
+            return provider.SaveOrUpdateItem( item );
         }
     }
 }

@@ -111,13 +111,16 @@ namespace @(Model.Namespace).DAO.SqlServer
         }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.UKs )))
 }
 
-        public void SaveOrUpdateItem(@(Model.NameS)VO item) {
+        public int SaveOrUpdateItem(@(Model.NameS)VO item) {
             SqlParameter[] p = new SqlParameter[] {
 @(TemplateUtils.GetSaveSQLParameters( Model.Columns )),
-                SqlHelper.MakeInParameter(AT + FIELD_ACTION_DATE, SqlDbType.DateTime, 8, item.ActionDate == DateTime.MinValue ? DateTime.Now : item.ActionDate),
-                SqlHelper.MakeInParameter(AT + FIELD_ACTION_BY, SqlDbType.NVarChar, 50, item.ActionBy ?? String.Empty),
+                SqlHelper.MakeInParameter( AT + FIELD_ACTION_DATE, SqlDbType.DateTime, 8, item.ActionDate == DateTime.MinValue ? DateTime.Now : item.ActionDate ),
+                SqlHelper.MakeInParameter( AT + FIELD_ACTION_BY, SqlDbType.NVarChar, 50, item.ActionBy ?? String.Empty ),
+                SqlHelper.MakeParameter( AT + FIELD_RETURN_VALUE, SqlDbType.Int, 4, ParameterDirection.Output, -1 )
             };
-            SqlHelper.ExecuteScalar(dbConnectionString, CommandType.StoredProcedure, PROC_SAVE_@Model.NameS.ToUpper(), p);
+            SqlHelper.ExecuteNonQuery( dbConnectionString, CommandType.StoredProcedure, PROC_SAVE_@Model.NameS.ToUpper(), p );
+
+            return Convert.ToInt32(p[p.Length - 1].Value);
         }
         #endregion
 

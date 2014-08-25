@@ -36,6 +36,6 @@ namespace @(Model.Namespace).DAO
         void DeleteItemByUK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs )))
 }
 
-        void SaveOrUpdateItem( @(Model.NameS)VO item );
+        int SaveOrUpdateItem( @(Model.NameS)VO item );
     }
 }

@@ -72,17 +72,18 @@ namespace CodeGenerator
                 return;
             }
 
-            PutMessageToStatusStrip( "Generating files..." );
+            PutMessageToStatusStrip( "Collecting data..." );
 
             ColumnBO currBO = ColumnBO.GetInstance( dbServer, dbName );
-            TemplateModel model = null;
 
-            foreach ( DataGridViewRow item in dataGridView1.Rows ) {
-                if ( !item.Selected ) continue;
-                PutMessageToStatusStrip( "Processing line " + ( item.Index + 1 ) );
-                TableVO currVO = (TableVO)item.DataBoundItem;
+            List<TemplateModel> tables = new List<TemplateModel>();
+
+            foreach ( DataGridViewRow currRow in dataGridView1.Rows ) {
+                if ( !currRow.Selected ) continue;
+
+                TableVO currVO = (TableVO)currRow.DataBoundItem;
                 if ( currVO != null ) {
-                    model = new TemplateModel();
+                    TemplateModel model = new TemplateModel();
                     model.Namespace = nameSpace;
                     model.TableId = currVO.TableId;
                     model.Name = currVO.Name;
@@ -92,12 +93,13 @@ namespace CodeGenerator
                     model.FKs = currBO.GetFKs( currVO.Name );
                     model.UKs = currBO.GetUKs( currVO.Name );
 
-                    this.GenerateCodes( model, dbName );
+                    tables.Add( model );
+                    //this.GenerateCodes( model, dbName );
                 }
             }
-            if ( model != null ) GenerateBaseCodes( model, dbName );
+            //if ( model != null ) GenerateBaseCodes( model, dbName );
 
-            PutMessageToStatusStrip( "Codes generated." );
+            DoGenerate( tables, dbName );
         }
 
         private void generateSQLButton_Click( object sender, EventArgs e ) {
@@ -106,6 +108,15 @@ namespace CodeGenerator
         #endregion
 
         #region Privates
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tables"></param>
+        /// <param name="dbName"></param>
+        private void DoGenerate( List<TemplateModel> tables, string dbName ) {
+            Task.Factory.StartNew( GenerateCodes, new GenerateModel() { Tables = tables, DbName = dbName } );
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -175,7 +186,14 @@ namespace CodeGenerator
         /// 代码生成方法，所有的代码生成都在这里
         /// </summary>
         /// <param name="currVO"></param>
-        private void GenerateCodes( TemplateModel currVO, string dbName ) {
+        private void GenerateCodes( object obj ) {
+            if ( !( obj is GenerateModel ) ) return;
+
+            GenerateModel source = obj as GenerateModel;
+
+            List<TemplateModel> items = source.Tables;
+            string dbName = source.DbName;
+
             string dirFormatterVO = "Generators\\{1}\\{2}\\Codes\\VO\\{0}VO.cs";
             string dirFormatterDAO = "Generators\\{1}\\{2}\\Codes\\DAO\\SqlServer\\{0}Provider.cs";
             string dirFormatterBO = "Generators\\{1}\\{2}\\Codes\\BO\\{0}BO.cs";
@@ -183,31 +201,42 @@ namespace CodeGenerator
             string dirFormatterSQL = "Generators\\{1}\\{2}\\SQLs\\USP_Save_{0}.sql";
             string dateString = DateTime.Now.ToString( "yyyy-MM-dd" );
 
-            // 1.VO.
-            using ( StreamReader sr = new StreamReader( "templates\\VO\\VO.cshtml", true ) ) {
-                string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
-                SaveToFile( string.Format( dirFormatterVO, currVO.NameS, dateString, dbName ), output );
+            PutMessageToStatusStrip( "Generating..." );
+
+            int i = 0;
+            foreach ( TemplateModel currVO in items ) {
+                PutMessageToStatusStrip( "Processing line " + ( ++i ) );
+
+                // 1.VO.
+                using ( StreamReader sr = new StreamReader( "templates\\VO\\VO.cshtml", true ) ) {
+                    string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
+                    SaveToFile( string.Format( dirFormatterVO, currVO.NameS, dateString, dbName ), output );
+                }
+                // 2.DAO
+                using ( StreamReader sr = new StreamReader( "templates\\DAO\\DAO.cshtml", true ) ) {
+                    string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
+                    SaveToFile( string.Format( dirFormatterDAO, currVO.NameS, dateString, dbName ), output );
+                }
+                // 3.BO
+                using ( StreamReader sr = new StreamReader( "templates\\BO\\BO.cshtml", true ) ) {
+                    string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
+                    SaveToFile( string.Format( dirFormatterBO, currVO.NameS, dateString, dbName ), output );
+                }
+                // 5.Interface.
+                using ( StreamReader sr = new StreamReader( "templates\\DAO\\Interface.cshtml", true ) ) {
+                    string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
+                    SaveToFile( string.Format( dirFormatterInterface, currVO.NameS, dateString, dbName ), output );
+                }
+                // 7.SQL
+                using ( StreamReader sr = new StreamReader( "templates\\SQL\\Procedure.cshtml", true ) ) {
+                    string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
+                    SaveToFile( string.Format( dirFormatterSQL, currVO.NameS, dateString, dbName ), output );
+                }
             }
-            // 2.DAO
-            using ( StreamReader sr = new StreamReader( "templates\\DAO\\DAO.cshtml", true ) ) {
-                string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
-                SaveToFile( string.Format( dirFormatterDAO, currVO.NameS, dateString, dbName ), output );
-            }
-            // 3.BO
-            using ( StreamReader sr = new StreamReader( "templates\\BO\\BO.cshtml", true ) ) {
-                string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
-                SaveToFile( string.Format( dirFormatterBO, currVO.NameS, dateString, dbName ), output );
-            }
-            // 5.Interface.
-            using ( StreamReader sr = new StreamReader( "templates\\DAO\\Interface.cshtml", true ) ) {
-                string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
-                SaveToFile( string.Format( dirFormatterInterface, currVO.NameS, dateString, dbName ), output );
-            }
-            // 7.SQL
-            using ( StreamReader sr = new StreamReader( "templates\\SQL\\Procedure.cshtml", true ) ) {
-                string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
-                SaveToFile( string.Format( dirFormatterSQL, currVO.NameS, dateString, dbName ), output );
-            }
+
+            if ( items.Count > 0 ) GenerateBaseCodes( items[0], dbName );
+
+            PutMessageToStatusStrip( "Codes generated." );
         }
         /// <summary>
         /// 

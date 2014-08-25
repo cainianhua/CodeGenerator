@@ -283,6 +283,7 @@
             this.generateSQLButton.TabIndex = 4;
             this.generateSQLButton.Text = "Generate SQL";
             this.generateSQLButton.UseVisualStyleBackColor = true;
+            this.generateSQLButton.Visible = false;
             this.generateSQLButton.Click += new System.EventHandler(this.generateSQLButton_Click);
             // 
             // connectButton
