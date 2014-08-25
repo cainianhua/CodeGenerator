@@ -40,8 +40,18 @@ namespace CodeGenerator
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void dbComboBox_Click( object sender, EventArgs e ) {
-            LoadDatabases();
+			if ( dbComboBox.SelectedValue == null ) {
+				LoadDatabases();
+			}
         }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="sender"></param>
+		/// <param name="e"></param>
+		private void dbComboBox_SelectedIndexChanged( object sender, EventArgs e ) {
+			txtNamespace.Text = Convert.ToString( dbComboBox.SelectedValue );
+		}
         /// <summary>
         /// 查询数据表
         /// </summary>
@@ -49,7 +59,12 @@ namespace CodeGenerator
         /// <param name="e"></param>
         private void queryButton_Click( object sender, EventArgs e ) {
             string dbServer = txtDbServer.Text.Trim();
-            string dbName = dbComboBox.SelectedValue.ToString();
+            string dbName = Convert.ToString(dbComboBox.SelectedValue);
+
+			if ( string.IsNullOrEmpty( dbServer ) || string.IsNullOrEmpty( dbName ) ) {
+				MessageBox.Show( "The \"Server\" and \"Database\" can't be empty." );
+				return;
+			}
 
             List<TableVO> userTables = TableBO.GetInstance( dbServer, dbName ).GetTables();
             if ( userTables.Count > 0 ) {
@@ -57,7 +72,7 @@ namespace CodeGenerator
             }
             dataGridView1.DataSource = userTables;
 
-            PutMessageToStatusStrip( string.Format( "Load tables completed, count is {0}", userTables.Count ) );
+			PutMessageToStatusStrip( string.Format( "All tables are loaded({0}).", userTables.Count ) );
         }
         /// <summary>
         /// 
@@ -87,6 +102,7 @@ namespace CodeGenerator
                 if ( currVO != null ) {
                     TemplateModel model = new TemplateModel();
                     model.Namespace = nameSpace;
+					model.DatabaseName = dbName;
                     model.TableId = currVO.TableId;
                     model.Name = currVO.Name;
                     model.NameS = currVO.NameS;
@@ -123,15 +139,19 @@ namespace CodeGenerator
         /// 
         /// </summary>
         private void LoadDatabases() {
-            string serverName = txtDbServer.Text.Trim();
+			string serverName = txtDbServer.Text.Trim();
+			PutMessageToStatusStrip( string.Format( "Connecting to server \"{0}\"", serverName ) );
+            
             if ( !string.IsNullOrEmpty( serverName ) ) {
                 Task.Factory.StartNew<DataSet>( GetDatabases, serverName ).ContinueWith( t => {
                     if ( t.Exception != null ) return;
                     if ( t.Result != null ) {
                         BindDataToDatabaseCombo( t.Result );
+						PutMessageToStatusStrip( string.Format( "Connected to server \"{0}\"", serverName ) );
                     }
                     else {
-                        PutMessageToStatusStrip( string.Format( "Can't connect to {0}", serverName ) );
+                        PutMessageToStatusStrip( string.Format( "Can't connect to server \"{0}\"", serverName ) );
+						MessageBox.Show( string.Format( "Can't connect to server \"{0}\"", serverName ) );
                     }
                 } );
             }

@@ -9,6 +9,7 @@ namespace CodeGenerator.Models
     public class TemplateModel
     {
         public string Namespace { get; set; }
+		public string DatabaseName { get; set; }
         public int TableId { get; set; }
         public string Name { get; set; }
         public string NameS { get; set; }
