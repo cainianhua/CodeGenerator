@@ -178,7 +178,7 @@ namespace CodeGenerator
 		public static string GetSQLParameters( List<ColumnVO> lst ) {
 			StringBuilder builder = new StringBuilder( lst.Count );
 			foreach ( ColumnVO item in lst ) {
-				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), GetParameterSize( item ), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
 			}
 			return builder.ToString().TrimEnd( ',', '\r', '\n' );
 		}
@@ -188,7 +188,7 @@ namespace CodeGenerator
         /// <param name="lst"></param>
         /// <returns></returns>
         public static string GetSQLParameter( ColumnVO item ) {
-            return string.Format( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} )", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
+			return string.Format( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, {3} )", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), GetParameterSize( item ), item.Name.Substring( 0, 1 ).ToLower() + item.Name.Substring( 1 ) );
         }
 		/// <summary>
 		/// 
@@ -198,7 +198,12 @@ namespace CodeGenerator
 		public static string GetSaveSQLParameters( List<ColumnVO> lst ) {
 			StringBuilder builder = new StringBuilder( lst.Count );
 			foreach ( ColumnVO item in lst ) {
-				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, item.{3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), item.MaxLength, item.Name );
+				builder.AppendFormat( "                SqlHelper.MakeInParameter( AT + FIELD_{0}, SqlDbType.{1}, {2}, item.{3} ),\r\n", item.Name.ToUpper(), ConvertSqlTypeToSqlDataType( item.UserTypeName ), GetParameterSize(item), item.Name );
+			}
+			builder.Append( "                SqlHelper.MakeInParameter( AT + FIELD_ACTION_DATE, SqlDbType.DateTime, 8, item.ActionDate == DateTime.MinValue ? DateTime.Now : item.ActionDate ),\r\n" );
+			builder.Append( "                SqlHelper.MakeInParameter( AT + FIELD_ACTION_BY, SqlDbType.NVarChar, 50, item.ActionBy ?? String.Empty ),\r\n" );
+			if ( lst[0].IsIdentity ) {
+				builder.AppendFormat( "                SqlHelper.MakeParameter( AT + FIELD_RETURN_VALUE, SqlDbType.Int, 4, ParameterDirection.Output, -1 )" );
 			}
 			return builder.ToString().TrimEnd( ',', '\r', '\n' );
 		}
@@ -218,5 +223,21 @@ namespace CodeGenerator
             }
             return c.UserTypeName;
         }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="c"></param>
+		/// <returns></returns>
+		public static int GetParameterSize( ColumnVO c ) {
+			switch ( c.UserTypeName ) {
+				case "nvarchar":
+				case "nchar":
+					return c.MaxLength == -1 ? -1 : c.MaxLength / 2;
+				case "varchar":
+				case "char":
+					return c.MaxLength == -1 ? -1 : c.MaxLength;
+			}
+			return c.MaxLength;
+		}
 	}
 }
