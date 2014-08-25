@@ -179,7 +179,7 @@
             this.txtNamespace.Location = new System.Drawing.Point(666, 20);
             this.txtNamespace.Name = "txtNamespace";
             this.txtNamespace.Size = new System.Drawing.Size(231, 20);
-            this.txtNamespace.TabIndex = 5;
+            this.txtNamespace.TabIndex = 3;
             // 
             // label2
             // 
@@ -196,9 +196,8 @@
             this.txtDbServer.Location = new System.Drawing.Point(51, 20);
             this.txtDbServer.Name = "txtDbServer";
             this.txtDbServer.Size = new System.Drawing.Size(180, 20);
-            this.txtDbServer.TabIndex = 3;
+            this.txtDbServer.TabIndex = 1;
             this.txtDbServer.Text = "(local)";
-            this.txtDbServer.Leave += new System.EventHandler(this.txtDbServer_Leave);
             // 
             // dbComboBox
             // 
@@ -208,6 +207,7 @@
             this.dbComboBox.Name = "dbComboBox";
             this.dbComboBox.Size = new System.Drawing.Size(236, 21);
             this.dbComboBox.TabIndex = 2;
+            this.dbComboBox.Click += new System.EventHandler(this.dbComboBox_Click);
             // 
             // label1
             // 

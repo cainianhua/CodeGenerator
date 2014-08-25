@@ -16,9 +16,17 @@ namespace @(Model.Namespace).BO
     public class @(Model.NameS)BO : BaseBO 
     {
         private I@(Model.NameS)Provider provider;
+        private static @(Model.NameS)BO instance;
 
-        public @(Model.NameS)BO() {
+        private @(Model.NameS)BO() {
             provider = (I@(Model.NameS)Provider)this.CreateProvider("@(Model.NameS)");
+        }
+
+        public static @(Model.NameS)BO GetInstance() {
+            if (instance == null) {
+                instance = new @(Model.NameS)BO();
+            }
+            return instance;
         }
 
         public List<@(Model.NameS)VO> GetItems() {

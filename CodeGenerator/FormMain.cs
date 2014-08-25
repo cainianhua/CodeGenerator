@@ -13,6 +13,7 @@ using RazorEngine;
 using System.IO;
 using CodeGenerator.Models;
 using System.Web;
+using System.Configuration;
 
 namespace CodeGenerator
 {
@@ -20,6 +21,9 @@ namespace CodeGenerator
     {
         public FormMain() {
             InitializeComponent();
+
+            this.txtDbServer.Text = ConfigurationManager.AppSettings["defaultDatabase"];
+            this.txtDbServer.Focus();
         }
 
         #region Events
@@ -29,15 +33,13 @@ namespace CodeGenerator
         /// <param name="e"></param>
         protected override void OnLoad( EventArgs e ) {
             base.OnLoad( e );
-
-            LoadDatabases();
         }
         /// <summary>
         /// 
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void txtDbServer_Leave( object sender, EventArgs e ) {
+        private void dbComboBox_Click( object sender, EventArgs e ) {
             LoadDatabases();
         }
         /// <summary>

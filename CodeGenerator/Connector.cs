@@ -32,7 +32,7 @@ namespace CodeGenerator
 		public DataSet GetDatabases( string server ) {
 			DataSet ds = null;
 			try {
-				ds = SqlHelper.ExecuteDataset( string.Format( @"Initial Catalog=master;Data Source={0};Integrated Security=True;Connect Timeout=5;", server ), CommandType.Text, "SELECT database_id as id, name FROM sys.databases ORDER BY name" ); 
+				ds = SqlHelper.ExecuteDataset( string.Format( @"Initial Catalog=master;Data Source={0};Integrated Security=True;Connect Timeout=5;", server ), CommandType.Text, "SELECT database_id as id, name FROM sys.databases" ); 
 			}
 			catch(Exception ex) {
 				if ( log.IsErrorEnabled )
