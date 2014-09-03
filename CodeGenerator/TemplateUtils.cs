@@ -41,22 +41,48 @@ namespace CodeGenerator
 					result = "int";
 					break;
 				case SqlDbType.SmallInt:
-				case SqlDbType.TinyInt:
 					result = "short";
 					break;
+                case SqlDbType.TinyInt:
+                    result = "byte";
+                    break;
 				case SqlDbType.Bit:
 					result = "bool";
 					break;
 				case SqlDbType.DateTime:
 				case SqlDbType.SmallDateTime:
+                case SqlDbType.Timestamp:
 					result = "DateTime";
 					break;
+                case SqlDbType.Money:
+                case SqlDbType.SmallMoney:
+                case SqlDbType.Decimal:
+                    result = "decimal";
+                    break;
+                case SqlDbType.Float:
+                    result = "double";
+                    break;
+                case SqlDbType.Real:
+                    result = "float";
+                    break;
+                case SqlDbType.Binary:
+                case SqlDbType.VarBinary:
+                case SqlDbType.Image:
+                    result = "byte[]";
+                    break;
+                case SqlDbType.UniqueIdentifier:
+                    result = "Guid";
+                    break;
+                case SqlDbType.Variant:
+                    result = "object";
+                    break;
 				case SqlDbType.Char:
 				case SqlDbType.NChar:
 				case SqlDbType.NVarChar:
 				case SqlDbType.VarChar:
 				case SqlDbType.Text:
 				case SqlDbType.NText:
+                case SqlDbType.Xml:
 				default:
 					result = "string";
 					break;
@@ -91,16 +117,40 @@ namespace CodeGenerator
 				case SqlDbType.Bit:
 					result = "Boolean";
 					break;
-				case SqlDbType.DateTime:
-				case SqlDbType.SmallDateTime:
+                case SqlDbType.DateTime:
+                case SqlDbType.SmallDateTime:
+                case SqlDbType.Timestamp:
 					result = "DateTime";
 					break;
+                case SqlDbType.Money:
+                case SqlDbType.SmallMoney:
+                case SqlDbType.Decimal:
+                    result = "Decimal";
+                    break;
+                case SqlDbType.Float:
+                    result = "Double";
+                    break;
+                case SqlDbType.Real:
+                    result = "Single";
+                    break;
+                case SqlDbType.Binary:
+                case SqlDbType.VarBinary:
+                case SqlDbType.Image:
+                    result = "Byte[]";
+                    break;
+                case SqlDbType.UniqueIdentifier:
+                    result = "Guid";
+                    break;
+                case SqlDbType.Variant:
+                    result = "Object";
+                    break;
 				case SqlDbType.Char:
 				case SqlDbType.NChar:
 				case SqlDbType.NVarChar:
 				case SqlDbType.VarChar:
 				case SqlDbType.Text:
 				case SqlDbType.NText:
+                case SqlDbType.Xml:
 				default:
 					result = "String";
 					break;

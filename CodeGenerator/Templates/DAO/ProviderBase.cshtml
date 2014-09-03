@@ -68,5 +68,9 @@ namespace @(Model.Namespace).DAO.SqlServer
         protected bool ReadBoolean(IDataReader reader, string p) {
             return reader[p] == DBNull.Value ? false : Convert.ToBoolean(reader[p]);
         }
+
+        protected decimal ReadDecimal( IDataReader reader, string p ) {
+			return reader[p] == DBNull.Value ? 0 : Convert.ToDecimal( reader[p] );
+		}
     }
 }

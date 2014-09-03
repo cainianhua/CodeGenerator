@@ -11,6 +11,9 @@ using System.Text;
 using @(Model.Namespace).DAO;
 using @(Model.Namespace).VO;
 
+@{
+    bool hasIdentityRow = Model.Columns[0].IsIdentity;
+}
 namespace @(Model.Namespace).BO 
 {
     public class @(Model.NameS)BO : BaseBO 
@@ -32,6 +35,7 @@ namespace @(Model.Namespace).BO
         public List<@(Model.NameS)VO> GetItems() {
             return provider.GetItems();
         }
+
 @if ( Model.PKs.Count > 0 ) {
     @(string.Format(@"
         public {0}VO GetItem( {1} ) {{
@@ -54,21 +58,29 @@ namespace @(Model.Namespace).BO
         }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), TemplateUtils.GetMethodCallParameter( item ), item.Name ))
 }
 
-@if ( Model.UKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.UKs ) {
     @(string.Format(@"
-        public {0}VO GetItemByUK( {1} ) {{
-            return provider.GetItemByUK( {2} );
+        public {0}VO GetItemBy{3}( {1} ) {{
+            return provider.GetItemBy{3}( {2} );
         }}
 
-        public void DeleteItemByUK( {1} ) {{
-            provider.DeleteItemByUK( {2} );
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), TemplateUtils.GetMethodCallParameters( Model.UKs )))
+        public void DeleteItemBy{3}( {1} ) {{
+            provider.DeleteItemBy{3}( {2} );
+        }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), TemplateUtils.GetMethodCallParameter( item ), item.Name ))
 }
 
 
-        public int SaveOrUpdateItem( @(Model.NameS)VO item ) {
-            if (item == null ) return -1;
-            return provider.SaveOrUpdateItem( item );
+        public @(hasIdentityRow ? "int" : "void") SaveOrUpdateItem( @(Model.NameS)VO item ) {
+@if ( hasIdentityRow ) {
+            <text>if ( item == null ) return -1;
+            return provider.SaveOrUpdateItem( item );</text>
+}
+else {
+            <text>if ( item == null ) return;
+            provider.SaveOrUpdateItem( item );
+            </text>
+}
+
         }
     }
 }

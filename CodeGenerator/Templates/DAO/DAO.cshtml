@@ -12,6 +12,9 @@ using System.Linq;
 using System.Text;
 using @(Model.Namespace).VO;
 
+@{
+    bool hasIdentityRow = Model.Columns[0].IsIdentity;
+}
 namespace @(Model.Namespace).DAO.SqlServer 
 {
     internal class @(Model.NameS)Provider : ProviderBase, I@(Model.NameS)Provider 
@@ -30,10 +33,10 @@ namespace @(Model.Namespace).DAO.SqlServer
         private const string SQL_DELETE_{0}_BY_{3} = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( item ), item.Name.ToUpper() ))
 }
 
-@if ( Model.UKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.UKs ) {
     @(string.Format( 
-@"        private const string SQL_GET_{0}_UK = ""SELECT * FROM {1} WHERE {2}"";
-        private const string SQL_DELETE_{0}_UK = ""DELETE FROM {1} WHERE {2}"";", Model.Name.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnds( Model.UKs ) ))
+@"        private const string SQL_GET_{0}_BY_{3} = ""SELECT * FROM {1} WHERE {2}"";
+        private const string SQL_DELETE_{0}_BY_{3} = ""DELETE FROM {1} WHERE {2}"";", Model.NameS.ToUpper(), Model.Name, TemplateUtils.GetSQLWhereAnd( item ), item.Name.ToUpper() ))
 }
 
         private const string PROC_SAVE_@Model.NameS.ToUpper() = "USP_Save_@(Model.NameS)";
@@ -86,38 +89,39 @@ namespace @(Model.Namespace).DAO.SqlServer
             SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_BY_{5}, p);
         }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameter( item ), item.Name, item.Name.ToUpper() ))
 }
-@if ( Model.UKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.UKs ) {
     @(string.Format(
-@"        /// <summary>
+        @"        /// <summary>
         /// Get item according to unique key.
         /// </summary>
-        public {0}VO GetItemByUK({1}) {{
+        public {0}VO GetItemBy{4}({1}) {{
             {0}VO item = null;
             SqlParameter[] p = new SqlParameter[] {{ 
 {3}
             }};
-            List<{0}VO> items = GetSQLResults( SQL_GET_{2}_UK, p);
+            List<{0}VO> items = GetSQLResults( SQL_GET_{2}_BY_{5}, p);
             if (items.Count > 0) item = items[0];
             return item;
         }}
         /// <summary>
         /// Delete item according to unique key.
         /// </summary>
-        public void DeleteItemByUK({1}) {{
+        public void DeleteItemBy{4}({1}) {{
             SqlParameter[] p = new SqlParameter[] {{ 
 {3}
             }};
-            SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_UK, p);
-        }}", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs ), Model.Name.ToUpper(), TemplateUtils.GetSQLParameters( Model.UKs )))
+            SqlHelper.ExecuteNonQuery(dbConnectionString, CommandType.Text, SQL_DELETE_{2}_BY_{5}, p);
+        }}", Model.NameS, TemplateUtils.GetMethodParameter( item ), Model.NameS.ToUpper(), TemplateUtils.GetSQLParameter( item ), item.Name, item.Name.ToUpper() ))
 }
 
-        public int SaveOrUpdateItem(@(Model.NameS)VO item) {
+        public @(hasIdentityRow ? "int" : "void") SaveOrUpdateItem(@(Model.NameS)VO item) {
             SqlParameter[] p = new SqlParameter[] {
 @(TemplateUtils.GetSaveSQLParameters( Model.Columns ))
             };
             SqlHelper.ExecuteNonQuery( dbConnectionString, CommandType.StoredProcedure, PROC_SAVE_@Model.NameS.ToUpper(), p );
-
-            return Convert.ToInt32(p[p.Length - 1].Value);
+@if ( hasIdentityRow ) {
+            <text>return Convert.ToInt32( p[p.Length - 1].Value );</text>
+}
         }
         #endregion
 

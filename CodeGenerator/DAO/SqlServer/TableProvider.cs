@@ -13,7 +13,7 @@ namespace CodeGenerator.DAO.SqlServer
 		private const string SQL_GET_TABLES = @"
 SELECT [object_id] as TableId, name, create_date, modify_date
 FROM sys.objects 
-WHERE type in ('U')
+WHERE type in ('U', 'V')
 ";
 
 		private const string FIELD_TABLE_ID = "TableId";

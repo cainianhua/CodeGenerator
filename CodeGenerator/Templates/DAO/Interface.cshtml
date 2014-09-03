@@ -10,6 +10,9 @@ using System.Linq;
 using System.Text;
 using @(Model.Namespace).VO;
 
+@{
+    bool hasIdentityRow = Model.Columns[0].IsIdentity;
+}
 namespace @(Model.Namespace).DAO 
 {
     public interface I@(Model.NameS)Provider 
@@ -29,13 +32,13 @@ namespace @(Model.Namespace).DAO
         void DeleteItemsBy{2}( {1} );", Model.NameS, TemplateUtils.GetMethodParameter( item ), item.Name))
 }
 
-@if ( Model.UKs.Count > 0 ) {
+@foreach ( ColumnVO item in Model.UKs ) {
     @(string.Format(@"
-        {0}VO GetItemByUK( {1} );
+        {0}VO GetItemBy{2}( {1} );
 
-        void DeleteItemByUK( {1} );", Model.NameS, TemplateUtils.GetMethodParameters( Model.UKs )))
+        void DeleteItemBy{2}( {1} );", Model.NameS, TemplateUtils.GetMethodParameter( item ), item.Name))
 }
 
-        int SaveOrUpdateItem( @(Model.NameS)VO item );
+        @(hasIdentityRow ? "int" : "void") SaveOrUpdateItem( @(Model.NameS)VO item );
     }
 }
