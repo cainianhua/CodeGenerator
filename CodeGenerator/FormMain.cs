@@ -34,6 +34,15 @@ namespace CodeGenerator
         protected override void OnLoad( EventArgs e ) {
             base.OnLoad( e );
         }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="e"></param>
+		protected override void OnResize( EventArgs e ) {
+			base.OnResize( e );
+
+			this.toolStripStatusLabel1.Width = this.Width - this.toolStripProgressBar1.Width - 50;
+		}
         /// <summary>
         /// 
         /// </summary>
@@ -68,7 +77,7 @@ namespace CodeGenerator
 
             List<TableVO> userTables = TableBO.GetInstance( dbServer, dbName ).GetTables();
             if ( userTables.Count > 0 ) {
-                generateCodesButton.Enabled = generateSQLButton.Enabled = true;
+                btnT1GenerateAll.Enabled = btnT1GenerateSQL.Enabled = true;
             }
             dataGridView1.DataSource = userTables;
 
@@ -79,7 +88,7 @@ namespace CodeGenerator
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void generateCodesButton_Click( object sender, EventArgs e ) {
+		private void btnT1GenerateAll_Click( object sender, EventArgs e ) {
             string dbServer = txtDbServer.Text.Trim();
             string dbName = dbComboBox.SelectedValue.ToString();
             string nameSpace = txtNamespace.Text.Trim();
@@ -90,6 +99,7 @@ namespace CodeGenerator
             }
 
             PutMessageToStatusStrip( "Collecting data..." );
+			toolStripProgressBar1.Visible = true;
 
             ColumnBO currBO = ColumnBO.GetInstance( dbServer, dbName );
 
@@ -120,7 +130,7 @@ namespace CodeGenerator
             DoGenerate( tables, dbName );
         }
 
-        private void generateSQLButton_Click( object sender, EventArgs e ) {
+		private void btnT1GenerateSQL_Click( object sender, EventArgs e ) {
 
         }
         #endregion
@@ -190,6 +200,26 @@ namespace CodeGenerator
                 this.toolStripStatusLabel1.Text = message;
             }
         }
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="percentage"></param>
+		private void ShowProgressToStatusStrip( int percentage ) {
+			if ( this.statusStrip1.InvokeRequired ) {
+				this.Invoke( new Action<Int32>( ShowProgressToStatusStrip ), percentage );
+			}
+			else {
+				this.toolStripProgressBar1.Value = percentage;
+			}
+		}
+		private void HideProgressToStatusStrip() {
+			if ( this.statusStrip1.InvokeRequired ) {
+				this.Invoke( new Action( HideProgressToStatusStrip ) );
+			}
+			else {
+				this.toolStripProgressBar1.Visible = false;
+			}
+		}
         /// <summary>
         /// 
         /// </summary>
@@ -228,7 +258,7 @@ namespace CodeGenerator
             int i = 0;
             foreach ( TemplateModel currVO in items ) {
                 PutMessageToStatusStrip( "Processing line " + ( ++i ) );
-
+				ShowProgressToStatusStrip( i * 100 / ( items.Count + 1 ) );
                 // 1.VO.
                 using ( StreamReader sr = new StreamReader( "templates\\VO\\VO.cshtml", true ) ) {
                     string output = HttpUtility.HtmlDecode( Razor.Parse<TemplateModel>( sr.ReadToEnd(), currVO ) );
@@ -258,7 +288,11 @@ namespace CodeGenerator
 
             if ( items.Count > 0 ) GenerateBaseCodes( items[0], dbName );
 
+			ShowProgressToStatusStrip( 100 );
+
             PutMessageToStatusStrip( "Codes generated." );
+			MessageBox.Show( "Codes generated." );
+			HideProgressToStatusStrip();
         }
         /// <summary>
         /// 
