@@ -50,8 +50,8 @@ BEGIN
                 }
                    ,[CreatedDate]
                    ,[CreatedBy]
-                   ,[ModifiedDate]
-                   ,[ModifiedBy])
+                   ,[UpdatedDate]
+                   ,[UpdatedBy])
              VALUES 
                 @for ( int i = startIndex; i < Model.Columns.Count; i++ ) {
                     @(string.Format( "                   {0}@{1}\r\n", i == startIndex ? "(" : ",", Model.Columns[i].Name ))
@@ -70,8 +70,8 @@ BEGIN
         @for ( int i = startIndex; i < Model.Columns.Count; i++ ) {
             @(string.Format( "        {0}[{1}] = @{1}\r\n", i == startIndex ? "   SET " : "      ,", Model.Columns[i].Name ))
         }
-              ,[ModifiedDate] = @@ActionDate
-              ,[ModifiedBy] = @@ActionBy
+              ,[UpdatedDate] = @@ActionDate
+              ,[UpdatedBy] = @@ActionBy
          WHERE @Model.Columns[0].Name = @@@Model.Columns[0].Name
     END
 END

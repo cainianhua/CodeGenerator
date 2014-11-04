@@ -18,7 +18,7 @@ SELECT c.column_id, c.name, c.user_type_id, t.name as user_type_name, c.max_leng
 FROM sys.columns c 
 LEFT JOIN sys.objects o ON c.[object_id] = o.[object_id]
 LEFT JOIN sys.types t ON t.user_type_id = c.user_type_id
-WHERE o.name = @Name AND c.name NOT IN ('CreatedDate','CreatedBy','ModifiedDate','ModifiedBy') 
+WHERE o.name = @Name AND c.name NOT IN ('CreatedDate','CreatedBy','UpdatedDate','UpdatedBy') 
 ";
 		/// <summary>
 		/// 获取所有主键字段

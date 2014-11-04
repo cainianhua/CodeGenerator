@@ -20,8 +20,8 @@ namespace @(Model.Namespace).DAO.SqlServer
 
         protected const string FIELD_CREATED_DATE = "CreatedDate";
         protected const string FIELD_CREATED_BY = "CreatedBy";
-        protected const string FIELD_MODIFIED_DATE = "ModifiedDate";
-        protected const string FIELD_MODIFIED_BY = "ModifiedBy";
+        protected const string FIELD_UPDATED_DATE = "UpdatedDate";
+        protected const string FIELD_UPDATED_BY = "UpdatedBy";
         protected const string FIELD_RETURN_VALUE = "ReturnValue";
         //protected const string FIELD_SEARCH_TEXT = "SearchText";
 		protected const string FIELD_PAGE_SIZE = "PageSize";
@@ -37,8 +37,8 @@ namespace @(Model.Namespace).DAO.SqlServer
         protected void SetBaseProperties(IDataReader reader, BaseVO item) {
             item.CreatedDate = ReadDateTime(reader, FIELD_CREATED_DATE);
 			item.CreatedBy = ReadString(reader, FIELD_CREATED_BY);
-			item.ModifiedDate = ReadDateTime(reader, FIELD_MODIFIED_DATE);
-			item.ModifiedBy = ReadString(reader, FIELD_MODIFIED_BY);
+			item.UpdatedDate = ReadDateTime(reader, FIELD_UPDATED_DATE);
+			item.UpdatedBy = ReadString(reader, FIELD_UPDATED_BY);
         }
 
         protected string ReadString(IDataReader reader, string p) {
